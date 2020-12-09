@@ -1,7 +1,16 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import torchvision
 from torchvision import datasets, transforms
+
+import models
+
+def train(G, D, trainloader, criterion, G_optim, D_optim, epoch, device):
+    for i, (x, _) in enumerate(trainloader):
+        x = x.to(device)
+        G_optim.zero_grad()
+        D_optim.zero_grad()
 
 def main():
     # Load data
@@ -20,8 +29,33 @@ def main():
     testloader = torch.utils.data.DataLoader(trainset, batch_size=100, 
                         shuffle=True, num_workers=2)
 
-    train_iter = iter(trainloader)
-    x, y = next(train_iter)
+    # cuda or cpu
+    if torch.cuda.is_available():
+        device = torch.device('cuda')
+        print('backend: GPU')
+    else:   
+        device = torch.device('cpu')
+        print('backend: CPU')
+
+    # define models
+    G = models.Generator()
+    D = models.Generator()
+    G.weight_init(0, 0.2)
+    D.weight_init(0, 0.2)
+    G.to(device)
+    D.to(device)
+
+    # loss
+    criterion = nn.BCELoss()
+
+    # optimizer
+    G_optim = optim.Adam(G.parameters(), 0.001, (0.5, 0.999))
+    D_optim = optim.Adam(D.parameters(), 0.001, (0.5, 0.999))
+
+    # train
+    for epoch in range(1, 2):
+        train(G, D, trainloader, criterion, G_optim, D_optim, epoch, device)
+    
 
 if __name__ == '__main__':
     main()
