@@ -37,7 +37,7 @@ class Discriminator(nn.Module):
         self.bn2   = nn.BatchNorm2d(128)
         self.conv3 = nn.Conv2d(128, 256, 4, 2, 1, bias=False)
         self.bn3   = nn.BatchNorm2d(256)
-        self.conv4 = nn.Conv2d(256, 512, 4, 2, 1, bias=False)
+        self.conv4 = nn.Conv2d(256, 512, 3, 2, 1, bias=False)
         self.bn4   = nn.BatchNorm2d(512)
         self.conv5 = nn.Conv2d(512,   1, 4, 1, 0, bias=False)
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     D = Discriminator()
     D.weight_init(0, 0.2)
     print(D)
-    x = torch.rand(4, 1, 64, 64)
+    x = torch.rand(4, 1, 28, 28)
     y = D(x)
     print(y.shape)
 

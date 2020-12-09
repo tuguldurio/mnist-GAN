@@ -9,8 +9,21 @@ import models
 def train(G, D, trainloader, criterion, G_optim, D_optim, epoch, device):
     for i, (x, _) in enumerate(trainloader):
         x = x.to(device)
-        G_optim.zero_grad()
+
+        # Train D
         D_optim.zero_grad()
+        y_real = torch.ones(x.size()[0]).to(device)
+        y_fake = torch.zeros(x.size()[0]).to(device)
+
+        print(x.shape)
+        D_pred = D(x).squeeze()
+        D_real_loss = criterion(D_pred, y_real)
+        print(D_real_loss)
+
+        # Train G
+        G_optim.zero_grad()
+        print('a')
+
 
 def main():
     # Load data
@@ -27,7 +40,7 @@ def main():
     testtest = datasets.MNIST('./data', train=False, 
                         download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(trainset, batch_size=100, 
-                        shuffle=True, num_workers=2)
+                        shuffle=False, num_workers=2)
 
     # cuda or cpu
     if torch.cuda.is_available():
@@ -39,7 +52,7 @@ def main():
 
     # define models
     G = models.Generator()
-    D = models.Generator()
+    D = models.Discriminator()
     G.weight_init(0, 0.2)
     D.weight_init(0, 0.2)
     G.to(device)
