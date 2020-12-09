@@ -56,7 +56,7 @@ class Discriminator(nn.Module):
                 m.bias.data.zero_()
         
 
-def test():
+if __name__ == '__main__':
     D = Discriminator()
     D.weight_init(0, 0.2)
     print(D)
@@ -70,7 +70,3 @@ def test():
     x = torch.rand(4, 10, 1, 1)
     y = G(x)
     print(y.shape)
-
-
-if __name__ == '__main__':
-    test()
