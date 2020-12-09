@@ -15,19 +15,20 @@ def train(G, D, trainloader, criterion, G_optim, D_optim, epoch, device):
         y_real = torch.ones(x.size()[0]).to(device)
         y_fake = torch.zeros(x.size()[0]).to(device)
 
-        print(x.shape)
         D_pred = D(x).squeeze()
         D_real_loss = criterion(D_pred, y_real)
-        print(D_real_loss)
+        D_real_loss.backward()
+
+        print(D_real_loss.item())
 
         # Train G
         G_optim.zero_grad()
-        print('a')
 
 
 def main():
     # Load data
     transform = transforms.Compose([
+        transforms.Scale(64),
         transforms.ToTensor(),
         transforms.Normalize((0.5), (0.5))
     ])
