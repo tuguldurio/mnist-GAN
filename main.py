@@ -13,7 +13,8 @@ import models
 def main():
     global parser
     parser = argparse.ArgumentParser(description='MNIST DCGAN')
-    parser.add_argument('--log-interval', type=int, default=100)
+    parser.add_argument('-z','--z-dim', type=int, default=100, help='dimension of noise')
+    parser.add_argument('--log-interval', type=int, default=100, help='batches to wait before logging')
     args = parser.parse_args()
 
     # Load data
@@ -42,8 +43,8 @@ def main():
         print('backend: CPU')
 
     # define models
-    G = models.Generator()
-    D = models.Discriminator()
+    G = models.Generator(args.z_dim, 128)
+    D = models.Discriminator(64)
     G.weight_init(0.0, 0.02)
     D.weight_init(0.0, 0.02)
     G.to(device)
@@ -56,7 +57,7 @@ def main():
     G_optimizer = optim.Adam(G.parameters(), 0.0002, betas=(0.5, 0.999))
     D_optimizer = optim.Adam(D.parameters(), 0.0002, betas=(0.5, 0.999))
 
-    z_test = Variable(torch.randn(1, 100).view(-1, 100, 1, 1).to(device))
+    z_test = Variable(torch.randn(1, args.z_dim, 1, 1).to(device))
 
     # train
     for epoch in range(1, 21):
@@ -71,7 +72,7 @@ def main():
             D_pred = D(x).squeeze()
             D_real_loss = criterion(D_pred, y_real)
 
-            z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1)
+            z = torch.randn(x.size(0), args.z_dim, 1, 1)
             z = Variable(z.to(device))
             G_pred = G(z)
 
@@ -87,7 +88,7 @@ def main():
             # Train G
             G.zero_grad()
 
-            z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1).to(device)
+            z = torch.randn(x.size(0), args.z_dim, 1, 1)
             z = Variable(z.to(device))
 
             G_pred = G(z)

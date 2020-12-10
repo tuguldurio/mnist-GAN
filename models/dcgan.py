@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Generator(nn.Module):
-    def __init__(self, d=128):
+    def __init__(self, z, d=128):
         super().__init__()
-        self.deconv1 = nn.ConvTranspose2d(100, d*4, 4, 1, 0)
+        self.deconv1 = nn.ConvTranspose2d(z, d*4, 4, 1, 0)
         self.bn1     = nn.BatchNorm2d(d*4)
         self.deconv2 = nn.ConvTranspose2d(d*4, d*2, 4, 2, 1)
         self.bn2     = nn.BatchNorm2d(d*2)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     y = D(x)
     print(y.shape)
 
-    G = Generator()
+    G = Generator(100)
     G.weight_init(0, 0.02)
     print(G)
     x = torch.rand(4, 100, 1, 1)
