@@ -7,56 +7,15 @@ from torchvision.utils import save_image
 from torch.autograd import Variable
 import matplotlib  
 import matplotlib.pyplot as plt
+import argparse
 import models
 
-z_test = 0
-
-def train(G, D, trainloader, criterion, G_optimizer, D_optimizer, epoch, device):
-    for i, (x, _) in enumerate(trainloader, 1):
-
-        # Train D 
-        D.zero_grad()
-        y_real = torch.ones(x.size(0))
-        y_fake = torch.zeros(x.size(0))
-
-        x, y_real, y_fake = Variable(x.to(device)), Variable(y_real.to(device)), Variable(y_fake.to(device))
-
-        D_pred = D(x).squeeze()
-        D_real_loss = criterion(D_pred, y_real)
-
-        z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1)
-        z = Variable(z.to(device))
-        G_pred = G(z)
-
-        D_pred = D(G_pred).squeeze()
-        D_fake_loss = criterion(D_pred, y_fake)
-        # D_fake_score = D_pred.data.mean()
-
-        D_train_loss = D_real_loss + D_fake_loss
-
-        D_train_loss.backward()
-        D_optimizer.step()
-
-        # Train G
-        G.zero_grad()
-
-        z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1).to(device)
-        z = Variable(z.to(device))
-
-        G_pred = G(z)
-        D_pred = D(G_pred).squeeze()
-        G_train_loss = criterion(D_pred, y_real)
-        G_train_loss.backward()
-        G_optimizer.step()
-
-        if i % 10 == 0:
-            print('[epoch {}, {}/{}] D_loss {:.3f}, G_loss {:.3f}'.format(
-                epoch, i, len(trainloader), 
-                D_train_loss.item(), G_train_loss.item())
-                )
-            save_image(G(z_test), f'results/{epoch}_{i}.png')
-
 def main():
+    global parser
+    parser = argparse.ArgumentParser(description='MNIST DCGAN')
+    parser.add_argument('--log-interval', type=int, default=100)
+    args = parser.parse_args()
+
     # Load data
     transform = transforms.Compose([
         transforms.Resize(32),
@@ -94,15 +53,55 @@ def main():
     criterion = nn.BCELoss()
 
     # optimizer
-    G_optim = optim.Adam(G.parameters(), 0.0002, betas=(0.5, 0.999))
-    D_optim = optim.Adam(D.parameters(), 0.0002, betas=(0.5, 0.999))
+    G_optimizer = optim.Adam(G.parameters(), 0.0002, betas=(0.5, 0.999))
+    D_optimizer = optim.Adam(D.parameters(), 0.0002, betas=(0.5, 0.999))
 
-    global z_test
     z_test = Variable(torch.randn(1, 100).view(-1, 100, 1, 1).to(device))
 
     # train
     for epoch in range(1, 21):
-        train(G, D, trainloader, criterion, G_optim, D_optim, epoch, device)
+        for i, (x, _) in enumerate(trainloader, 1):
+            # Train D 
+            D.zero_grad()
+            y_real = torch.ones(x.size(0))
+            y_fake = torch.zeros(x.size(0))
+
+            x, y_real, y_fake = Variable(x.to(device)), Variable(y_real.to(device)), Variable(y_fake.to(device))
+
+            D_pred = D(x).squeeze()
+            D_real_loss = criterion(D_pred, y_real)
+
+            z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1)
+            z = Variable(z.to(device))
+            G_pred = G(z)
+
+            D_pred = D(G_pred).squeeze()
+            D_fake_loss = criterion(D_pred, y_fake)
+            # D_fake_score = D_pred.data.mean()
+
+            D_train_loss = D_real_loss + D_fake_loss
+
+            D_train_loss.backward()
+            D_optimizer.step()
+
+            # Train G
+            G.zero_grad()
+
+            z = torch.randn(x.size(0), 100).view(-1, 100, 1, 1).to(device)
+            z = Variable(z.to(device))
+
+            G_pred = G(z)
+            D_pred = D(G_pred).squeeze()
+            G_train_loss = criterion(D_pred, y_real)
+            G_train_loss.backward()
+            G_optimizer.step()
+
+            if i % args.log_interval == 0:
+                print('[epoch {}, {}/{}] D_loss {:.3f}, G_loss {:.3f}'.format(
+                    epoch, i, len(trainloader), 
+                    D_train_loss.item(), G_train_loss.item())
+                    )
+                save_image(G(z_test), f'results/{epoch}_{i}.png')
     
 
 if __name__ == '__main__':
