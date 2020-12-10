@@ -59,7 +59,7 @@ def train(G, D, trainloader, criterion, G_optimizer, D_optimizer, epoch, device)
 def main():
     # Load data
     transform = transforms.Compose([
-        transforms.Resize(64),
+        transforms.Resize(32),
         transforms.ToTensor(),
         transforms.Normalize((0.5), (0.5))
     ])
