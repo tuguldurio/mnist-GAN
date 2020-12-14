@@ -8,7 +8,7 @@ from torch.autograd import Variable
 import matplotlib  
 import matplotlib.pyplot as plt
 import utils
-import models
+import model
 
 def main():
     parser = argparse.ArgumentParser(description='MNIST DCGAN')
@@ -33,8 +33,8 @@ def main():
         print('backend: CPU')
 
     # define models
-    G = models.Generator(args.z_dim, 64)
-    D = models.Discriminator(64)
+    G = model.Generator(args.z_dim, 64)
+    D = model.Discriminator(64)
     G.weight_init(0.0, 0.02)
     D.weight_init(0.0, 0.02)
     G.to(device)
@@ -106,6 +106,7 @@ def main():
 
         print('epoch {} took {:.2f}s to train'.format(epoch, time.time() - epoch_time_start))
     
+    torch.save(G.state_dict(), 'model/Generator.pth')
 
 if __name__ == '__main__':
     main()
