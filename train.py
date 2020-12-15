@@ -22,7 +22,7 @@ def main():
 
     # Load data
     img_size = 64
-    trainloader = utils.load_data(args, img_size)
+    trainloader = utils.load_data(args.batch_size, img_size)
 
     # cuda or cpu
     if torch.cuda.is_available():

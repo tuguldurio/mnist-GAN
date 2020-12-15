@@ -13,7 +13,7 @@ from torch.autograd import Variable
 fp_in = './results/*.png'
 fp_out = 'result.gif'
 
-def load_data(args, img_size):
+def load_data(batch_size, img_size):
     transform = transforms.Compose([
         transforms.Resize(img_size),
         transforms.ToTensor(),
@@ -22,7 +22,7 @@ def load_data(args, img_size):
 
     trainset = datasets.MNIST('./data', train=True, 
                         download=True, transform=transform)
-    trainloader = DataLoader(trainset, batch_size=args.batch_size, 
+    trainloader = DataLoader(trainset, batch_size=batch_size, 
                         shuffle=True)
     return trainloader
 
@@ -32,8 +32,6 @@ def plot_result(G, z, epoch, image_size, save_dir, fig_size, device):
     noise = Variable(z.to(device))
     test_pred = G(z)
     G.train()
-    
-    
 
     # save figure
     # if save:
