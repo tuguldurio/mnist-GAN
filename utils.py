@@ -24,27 +24,3 @@ def load_data(batch_size, img_size):
     trainloader = DataLoader(trainset, batch_size=batch_size, 
                         shuffle=True)
     return trainloader
-
-def plot_result(G, z, epoch, image_size, save_dir, fig_size, device):
-    G.eval()
-    noise = Variable(z.to(device))
-    test_pred = G(z)
-    G.train()
-
-    # save figure
-    # if save:
-    # if not os.path.exists(save_dir):
-    #     os.mkdir(save_dir)
-    # save_fn = save_dir + 'MNIST_DCGAN_epoch_{:d}'.format(epoch+1) + '.png'
-    # plt.savefig(save_fn)
-
-def save_gif():
-    images = os.listdir('results')
-    images = natsort.natsorted(images)
-    rng = images[-1].split('_')
-    for i in range(int(rng[0])):
-        for j in range(int(rng[1])):
-            pass 
-
-if __name__ == '__main__':
-    save_gif()

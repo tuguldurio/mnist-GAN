@@ -102,8 +102,6 @@ def main():
                     D_train_loss.item(), G_train_loss.item())
                     )
 
-        utils.plot_result(G, z_fixed, epoch, img_size, 'result',  (math.sqrt(args.test_imgs), math.sqrt(args.test_imgs)), device)
-
         print('epoch {} took {:.2f}s to train'.format(epoch, time.time() - epoch_time_start))
     
     torch.save(G.state_dict(), 'model/Generator.pth')
