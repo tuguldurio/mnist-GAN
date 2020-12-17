@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>GAN guesser</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+    .imagewrapper {
+        width: 50%;
+        float: left;
+        text-align: center;
+    }
+    .image {
+        width: 50%;
+    }
+    </style>
+</head>
+<body>
+    {% for image in images %}
+        <div class="imagewrapper">
+            <img src="data:image/jpg;base64,{{ image }}" class="image">
+        </div>
+    {% endfor %}
+
+    {% if answer == 1 %}
+        <p>{{ answer }}st image is Generated</p>
+    {% else %}
+        <p>{{ answer }}nd image is Generated</p>
+    {% endif %}
+    <!-- <img src="data:image/jpg;base64,{{ train_img }}">
+    <img src="data:image/jpg;base64,{{ G_img }}"> -->
+</body>
+</html>

@@ -9,7 +9,6 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 
-
 fp_in = './results/*.png'
 fp_out = 'result.gif'
 
@@ -25,7 +24,6 @@ def load_data(batch_size, img_size):
     trainloader = DataLoader(trainset, batch_size=batch_size, 
                         shuffle=True)
     return trainloader
-
 
 def plot_result(G, z, epoch, image_size, save_dir, fig_size, device):
     G.eval()
