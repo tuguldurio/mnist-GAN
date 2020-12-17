@@ -4,21 +4,22 @@ import random
 from torchvision.utils import save_image
 import model
 import utils
+from flask import Flask, render_template
 
-from django.shortcuts import render
-from django.http import HttpResponse
+app = Flask(__name__)
 
-def index(request):
+@app.route('/')
+def index():
     # load data
     train_img = next(iter(utils.load_data(1, 64)))[0]
-    train_img_path = 'main/static/train_image.jpg'
+    train_img_path = 'static/train_image.jpg'
     save_image(train_img, train_img_path)
 
     # load model
     G = model.Generator(100, 64)
     G.load_state_dict(torch.load('model/Generator.pth'))
     G.eval()
-    G_path = 'main/static/G_image.jpg'
+    G_path = 'static/G_image.jpg'
     save_image(G(torch.randn(1, 100, 1, 1)), G_path)
 
     with open(train_img_path, 'rb') as image_file:
@@ -35,4 +36,7 @@ def index(request):
         images = reversed(images)
         answer = 2
 
-    return render(request, 'index.html', {'images': images, 'answer': answer})
+    return render_template('index.html', images=images, answer=answer)
+
+if __name__ == '__main__':
+    app.run(debug=True)
